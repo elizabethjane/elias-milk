@@ -335,7 +335,7 @@ document.getElementById("sHours").textContent=(d3.sum(pick,r=>2*r.min)/60).toFix
 drawState();
 /* ---------- growth ---------- */
 (function(){
-  const G=[{d:"2/17/2026",age:.5,lb:7.6,p:21},{d:"2/19/2026",age:.6,lb:7.8,p:22},{d:"3/5/2026",age:1.1,lb:9.2,p:25},{d:"4/9/2026",age:2.2,lb:12.0,p:32},
+  const G=[{d:"At birth",age:0,lb:7.39,p:50,est:true},{d:"2/17/2026",age:.5,lb:7.6,p:21},{d:"2/19/2026",age:.6,lb:7.8,p:22},{d:"3/5/2026",age:1.1,lb:9.2,p:25},{d:"4/9/2026",age:2.2,lb:12.0,p:32},
     {d:"5/4/2026",age:3,lb:13.8,p:43},{d:"6/9/2026",age:4.2,lb:15.8,p:52},{d:"8/11/2026",age:6.3,lb:18.2,p:59},{d:"10/17/2026",age:8.5,lb:20.2,p:66,est:true}];
   const svg=d3.select("#growth"),W=1000,H=300,m={l:56,r:30,t:34,b:42};
   const x=d3.scaleLinear().domain([0,9]).range([m.l,W-m.r]), y=d3.scaleLinear().domain([0,100]).range([H-m.b,m.t]);
@@ -351,7 +351,7 @@ drawState();
   pt.append("circle").attr("class",g=>"gp"+(g.est?" est":"")).attr("r",5);
   pt.filter(g=>g.age!==.5).append("text").attr("class","pct").attr("text-anchor","middle").attr("y",-12).text(g=>(g.est?"~":"")+g.p+"th");
   pt.filter(g=>g.age!==.5).append("text").attr("class","wt").attr("text-anchor","middle").attr("y",20).text(g=>g.lb.toFixed(1)+" lb");
-  pt.on("mouseenter",(e,g)=>{tip.innerHTML=`<b>${g.d}</b> · ${g.age} months<br><span class="m">${g.lb.toFixed(1)} lb</span> · ${g.est?"about ":""}${g.p}th percentile${g.est?"<br>Estimated from WHO standards":""}`;tip.hidden=false;moveTip(e)})
+  pt.on("mouseenter",(e,g)=>{tip.innerHTML=`<b>${g.d}</b>${g.age?` · ${g.age} months`:""}<br><span class="m">${g.lb.toFixed(1)} lb</span> · ${g.est?"about ":""}${g.p}th percentile${g.est?"<br>Percentile estimated from WHO standards":""}${g.age===0?"<br>3.35 kg":""}`;tip.hidden=false;moveTip(e)})
     .on("mousemove",moveTip).on("mouseleave",hideTip);
 })();
 </script>
