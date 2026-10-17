@@ -78,22 +78,6 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,46px);lin
 .start circle{fill:var(--ink);stroke:var(--land);stroke-width:2}
 .start text{font-family:var(--body);font-size:11.5px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:3.5px;stroke-linejoin:round}
 .ship{fill:none;stroke:var(--milk);stroke-width:1.5;stroke-dasharray:4 4;transition:opacity .2s}
-.growth{padding:16px 16px 12px}
-.growth h2{font-family:var(--display);font-weight:400;font-size:20px;margin:0 0 4px}
-.growth .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
-.gbox{overflow-x:auto}
-#growth{display:block;width:100%;min-width:560px;height:auto}
-#growth .ax text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
-#growth .ax line,#growth .ax path{stroke:var(--border)}
-#growth .grid line{stroke:var(--hairline)}
-#growth .p50{stroke:var(--border);stroke-dasharray:4 4}
-#growth .gl{fill:none;stroke:var(--milk);stroke-width:2.5}
-#growth .ga{fill:var(--milk);opacity:.08}
-#growth .gp{fill:var(--surface);stroke:var(--milk);stroke-width:2}
-#growth .gp.est{stroke-dasharray:2 2}
-#growth .pct{font-family:var(--mono);font-size:12px;font-weight:500;fill:var(--ink)}
-#growth .wt{font-family:var(--body);font-size:11px;fill:var(--muted)}
-#growth .axt{font-family:var(--body);font-size:11px;fill:var(--muted)}
 .note{font-size:12px;color:var(--muted);margin:10px 8px 4px}
 .extra{border-top:1px solid var(--border);margin-top:8px;padding-top:8px}
 .extra .donor{cursor:default}
@@ -156,11 +140,6 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,46px);lin
       </div>
     </aside>
   </div>
-  <section class="panel growth">
-    <h2>Growing on donor milk</h2>
-    <p class="hint">Weight-for-age percentile at each checkup.</p>
-    <div class="gbox"><svg id="growth" viewBox="0 0 1000 300" role="img" aria-label="Line chart of Elias's weight percentile rising from 21st at two weeks to about 66th at 8.5 months"></svg></div>
-  </section>
 </div>
 <div class="tip" id="tip" hidden></div>
 
@@ -333,27 +312,6 @@ document.getElementById("sShip").textContent=rows.filter(r=>r.state==="MO").leng
 document.getElementById("sMiles").textContent=num(Math.round(d3.sum(pick,r=>2*r.mi)));
 document.getElementById("sHours").textContent=(d3.sum(pick,r=>2*r.min)/60).toFixed(1);
 drawState();
-/* ---------- growth ---------- */
-(function(){
-  const G=[{d:"At birth",age:0,lb:7.39,p:50,est:true},{d:"2/17/2026",age:.5,lb:7.6,p:21},{d:"2/19/2026",age:.6,lb:7.8,p:22},{d:"3/5/2026",age:1.1,lb:9.2,p:25},{d:"4/9/2026",age:2.2,lb:12.0,p:32},
-    {d:"5/4/2026",age:3,lb:13.8,p:43},{d:"6/9/2026",age:4.2,lb:15.8,p:52},{d:"8/11/2026",age:6.3,lb:18.2,p:59},{d:"10/17/2026",age:8.5,lb:20.2,p:66,est:true}];
-  const svg=d3.select("#growth"),W=1000,H=300,m={l:56,r:30,t:34,b:42};
-  const x=d3.scaleLinear().domain([0,9]).range([m.l,W-m.r]), y=d3.scaleLinear().domain([0,100]).range([H-m.b,m.t]);
-  svg.append("g").attr("class","grid").selectAll("line").data([25,75,100]).join("line").attr("x1",m.l).attr("x2",W-m.r).attr("y1",y).attr("y2",y);
-  svg.append("line").attr("class","p50").attr("x1",m.l).attr("x2",W-m.r).attr("y1",y(50)).attr("y2",y(50));
-  svg.append("text").attr("class","axt").attr("x",m.l+6).attr("y",y(50)-6).attr("text-anchor","start").text("50th percentile");
-  svg.append("g").attr("class","ax").attr("transform",`translate(0,${H-m.b})`).call(d3.axisBottom(x).ticks(9).tickFormat(d=>d).tickSizeOuter(0));
-  svg.append("g").attr("class","ax").attr("transform",`translate(${m.l},0)`).call(d3.axisLeft(y).tickValues([0,25,50,75,100]).tickFormat(d=>d+"th").tickSize(0).tickPadding(8)).select(".domain").remove();
-  svg.append("text").attr("class","axt").attr("x",(m.l+W-m.r)/2).attr("y",H-6).attr("text-anchor","middle").text("Age (months)");
-  svg.append("path").attr("class","ga").attr("d",d3.area().x(g=>x(g.age)).y0(y(0)).y1(g=>y(g.p))(G));
-  svg.append("path").attr("class","gl").attr("d",d3.line().x(g=>x(g.age)).y(g=>y(g.p))(G));
-  const pt=svg.append("g").selectAll("g").data(G).join("g").attr("transform",g=>`translate(${x(g.age)},${y(g.p)})`);
-  pt.append("circle").attr("class",g=>"gp"+(g.est?" est":"")).attr("r",5);
-  pt.filter(g=>g.age!==.5).append("text").attr("class","pct").attr("text-anchor","middle").attr("y",-12).text(g=>(g.est?"~":"")+g.p+"th");
-  pt.filter(g=>g.age!==.5).append("text").attr("class","wt").attr("text-anchor","middle").attr("y",20).text(g=>g.lb.toFixed(1)+" lb");
-  pt.on("mouseenter",(e,g)=>{tip.innerHTML=`<b>${g.d}</b>${g.age?` · ${g.age} months`:""}<br><span class="m">${g.lb.toFixed(1)} lb</span> · ${g.est?"about ":""}${g.p}th percentile${g.est?"<br>Percentile estimated from WHO standards":""}${g.age===0?"<br>3.35 kg":""}`;tip.hidden=false;moveTip(e)})
-    .on("mousemove",moveTip).on("mouseleave",hideTip);
-})();
 </script>
 
 </body>
