@@ -137,6 +137,11 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,46px);lin
           <div><div class="nm">Vitalis</div><div class="where">Freeze-dried donor milk, his first weeks</div></div>
           <div><div class="oz" id="vOz">224 oz</div><div class="drops">112 sachets</div></div>
         </div>
+        <div class="donor" role="group" aria-label="Milk bank donor milk">
+          <span class="swatch hatch"></span>
+          <div><div class="nm">Milk bank</div><div class="where">Pasteurized donor milk, 100 ml bottles</div></div>
+          <div><div class="oz">91 oz</div><div class="drops">27 bottles</div></div>
+        </div>
       </div>
     </aside>
   </div>
@@ -302,7 +307,8 @@ btn.append("div").attr("class","trip").text(p=>p.mo?`Shipped · ${mileText(p)}`:
 
 /* ---------- stats ---------- */
 const VITALIS=224; // Premium Supply: 112 sachets × 2 oz
-const T=d3.sum(rows,r=>r.oz)+VITALIS;
+const MILK_BANK=2700/29.5735; // 27 bottles × 100 ml, about 91 oz
+const T=d3.sum(rows,r=>r.oz)+VITALIS+MILK_BANK;
 const pick=rows.filter(r=>r.state!=="MO");
 document.getElementById("sOz").textContent=num(T);
 document.getElementById("sPlaces").textContent=places.length;
